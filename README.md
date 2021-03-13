@@ -1,6 +1,5 @@
 # Search-Photo-App
 
-***
 
 ## description
 
