@@ -1,0 +1,70 @@
+import FormView from "../views/FormView.js";
+import ResultView from "../views/ResultView.js";
+import HistoryView from "../views/HistoryView.js";
+
+import SearchModel from "../models/SearchModel.js";
+import HistoryModel from "../models/HistoryModel.js";
+
+const tag = "[Controller]";
+
+export default class Controller {
+  constructor() {
+    this.formView = new FormView(document.querySelector(".search-form"));
+    this.formView
+      .on("@submit", (e) => this.onSubmit(e.detail.input))
+      .on("@reset", (e) => this.onReset());
+
+    this.resultView = new ResultView(document.querySelector("#search-result"));
+
+    this.historyView = new HistoryView(
+      document.querySelector("#search-history")
+    );
+    this.historyView
+      .on("@click", (e) => this.onClickHistory(e.detail.keyword))
+      .on("@remove", (e) => this.onClickRemove(e.detail.keyword));
+
+    this.renderView();
+  }
+
+  renderView() {
+    this.fetchSearchHistory();
+  }
+
+  fetchSearchHistory() {
+    HistoryModel.list().then((data) => {
+      this.historyView.render(data);
+    });
+  }
+
+  onSubmit(input) {
+    console.log(tag, "onSubmit", input);
+    this.search(input);
+  }
+
+  search(input) {
+    this.formView.setValue(input);
+    SearchModel.list(input).then(({ data }) => {
+      this.onSearchResult(data.results);
+    });
+    HistoryModel.add(input);
+  }
+
+  onSearchResult(data = []) {
+    this.historyView.hide();
+    this.resultView.render(data);
+  }
+
+  onReset() {
+    this.resultView.hide();
+    this.fetchSearchHistory();
+  }
+
+  onClickHistory(keyword) {
+    this.search(keyword);
+  }
+
+  onClickRemove(keyword) {
+    HistoryModel.remove(keyword);
+    this.fetchSearchHistory();
+  }
+}
