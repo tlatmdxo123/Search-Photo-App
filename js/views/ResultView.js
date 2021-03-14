@@ -17,6 +17,7 @@ export default class ResultView extends View {
       : this.messages.NO_RESULT;
 
     this.show();
+    this.bindEvent();
   }
 
   getSearchResultsHtml(data) {
@@ -29,8 +30,22 @@ export default class ResultView extends View {
   }
 
   getSearchItemHtml(item) {
-    return `<li class='result_item'>
-      <img src="${item.urls.regular}">
+    return `<li data-id='${item.id}' class='result_item'>
+      <img src="${item.urls.regular}" alt='${item.alt_description}'>
     </li>`;
+  }
+
+  bindEvent() {
+    const items = this.el.querySelectorAll(".result_item");
+    Array.from(items).forEach((item) =>
+      item.addEventListener("click", (e) => {
+        this.onClickImg(e);
+      })
+    );
+  }
+
+  onClickImg(e) {
+    const id = e.currentTarget.dataset.id;
+    this.emit("@onClickImg", { id });
   }
 }

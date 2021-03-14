@@ -12,4 +12,10 @@ export default class Api {
       params: { client_id: this.ACCESS_KEY, query },
     });
   }
+
+  getData(id) {
+    return this.axios.get(`/photos/${id}`, {
+      params: { client_id: this.ACCESS_KEY, id },
+    });
+  }
 }

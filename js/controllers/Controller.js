@@ -1,9 +1,11 @@
 import FormView from "../views/FormView.js";
 import ResultView from "../views/ResultView.js";
 import HistoryView from "../views/HistoryView.js";
+import ModalView from "../views/ModalView.js";
 
 import SearchModel from "../models/SearchModel.js";
 import HistoryModel from "../models/HistoryModel.js";
+import ModalModel from "../models/ModalModel.js";
 
 const tag = "[Controller]";
 
@@ -14,7 +16,9 @@ export default class Controller {
       .on("@submit", (e) => this.onSubmit(e.detail.input))
       .on("@reset", (e) => this.onReset());
 
-    this.resultView = new ResultView(document.querySelector("#search-result"));
+    this.resultView = new ResultView(
+      document.querySelector("#search-result")
+    ).on("@onClickImg", (e) => this.onClickImg(e.detail.id));
 
     this.historyView = new HistoryView(
       document.querySelector("#search-history")
@@ -22,6 +26,8 @@ export default class Controller {
     this.historyView
       .on("@click", (e) => this.onClickHistory(e.detail.keyword))
       .on("@remove", (e) => this.onClickRemove(e.detail.keyword));
+
+    this.modalView = new ModalView(document.querySelector("#modal-wrap"));
 
     this.renderView();
   }
@@ -66,5 +72,11 @@ export default class Controller {
   onClickRemove(keyword) {
     HistoryModel.remove(keyword);
     this.fetchSearchHistory();
+  }
+
+  onClickImg(id) {
+    ModalModel.list(id).then(({ data }) => {
+      this.modalView.render(data);
+    });
   }
 }
