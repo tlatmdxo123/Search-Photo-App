@@ -30,10 +30,27 @@ export default class Controller {
     this.modalView = new ModalView(document.querySelector("#modal-wrap"));
 
     this.renderView();
+    this.infiniteScroll()
   }
 
   renderView() {
     this.fetchSearchHistory();
+  }
+
+  infiniteScroll(){
+    const renderingTrigger = document.querySelector('#rendering-trigger')
+    const observer = new IntersectionObserver(this.getMoreData.bind(this))
+    observer.observe(renderingTrigger)
+  }
+
+  getMoreData(){
+    SearchModel.fetchMoreData().then(({data}) => {
+      this.fetchMoreData(data.results)
+    })
+  }
+
+  fetchMoreData(data){
+    this.resultView.moreRender(data)
   }
 
   fetchSearchHistory() {
@@ -75,6 +92,7 @@ export default class Controller {
   }
 
   onClickImg(id) {
+    console.log(id);
     ModalModel.list(id).then(({ data }) => {
       this.modalView.render(data);
     });

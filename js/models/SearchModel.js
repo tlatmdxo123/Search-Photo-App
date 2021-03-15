@@ -6,8 +6,14 @@ export default {
   list(query) {
     return new Promise((res) => {
       const data = api.fetchSearchData(query);
-      console.log(data);
       res(data);
     });
   },
+
+  fetchMoreData(){
+    return new Promise(res => {
+      const data = api.getMoreData()
+      res(data)
+    })
+  }
 };

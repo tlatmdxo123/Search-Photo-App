@@ -11,7 +11,6 @@ export default class ModalView extends View {
 
   render(data = {}) {
     if (!data) return;
-    console.log(data);
     const tags = data.tags.map((tag) => tag.title).join("#");
     this.el.innerHTML = `
         <div data-action='remove' class='modal-box'>
@@ -39,7 +38,6 @@ export default class ModalView extends View {
   }
 
   toggleModal(isShow = true) {
-    console.log(isShow);
     document.querySelector("body").className = isShow ? "active" : "";
     isShow ? this.show() : this.hide();
   }

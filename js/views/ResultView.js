@@ -9,6 +9,20 @@ export default class ResultView extends View {
       NO_RESULT: "검색 결과가 없습니다",
     };
   }
+  
+  moreRender(data=[]){
+    
+    if(this.el.children.length === 0){
+      this.el.insertAdjacentHTML('beforeend',data.length ? this.getSearchResultsHtml(data) : '')
+    }else{
+      const resultWrap = this.el.querySelector('#result_wrap')
+      resultWrap.insertAdjacentHTML('beforeend',data.length ? data.reduce((html,item) => {
+        html+=this.getSearchItemHtml(item)
+        return html
+      },'') : '')
+    }
+    this.bindEvent();
+  }
 
   render(data = []) {
     console.log(tag, "render()", data);
@@ -25,7 +39,7 @@ export default class ResultView extends View {
       data.reduce((html, item) => {
         html += this.getSearchItemHtml(item);
         return html;
-      }, "<ul class='result_wrap'>") + "</ul>"
+      }, "<ul id='result_wrap' class='result_wrap'>") + "</ul>"
     );
   }
 
@@ -36,16 +50,14 @@ export default class ResultView extends View {
   }
 
   bindEvent() {
-    const items = this.el.querySelectorAll(".result_item");
-    Array.from(items).forEach((item) =>
-      item.addEventListener("click", (e) => {
-        this.onClickImg(e);
-      })
-    );
+    this.el.addEventListener('click',e => {
+      this.onClickImg(e)
+    })
+
   }
 
   onClickImg(e) {
-    const id = e.currentTarget.dataset.id;
+    const id = e.target.parentNode.dataset.id;
     this.emit("@onClickImg", { id });
   }
 }
