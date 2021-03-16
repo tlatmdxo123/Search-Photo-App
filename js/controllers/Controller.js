@@ -3,6 +3,7 @@ import ResultView from "../views/ResultView.js";
 import HistoryView from "../views/HistoryView.js";
 import ModalView from "../views/ModalView.js";
 import LoadingView from "../views/LoadingView.js";
+import DarkModeView from "../views/DarkModeView.js";
 
 import SearchModel from "../models/SearchModel.js";
 import HistoryModel from "../models/HistoryModel.js";
@@ -32,6 +33,10 @@ export default class Controller {
 
     this.modalView = new ModalView(document.querySelector("#modal-wrap"));
 
+    this.darkModeView = new DarkModeView(document.querySelector('#darkmode-wrap'))
+      .on('@toggle',e => this.toggleDark(e.detail.isDark))
+    const {matches} = window.matchMedia('(prefers-color-scheme:dark)')
+    this.darkModeView.toggleDark(matches)
     this.renderView();
     this.infiniteScroll()
   }
@@ -103,5 +108,9 @@ export default class Controller {
     ModalModel.list(id).then(({ data }) => {
       this.modalView.render(data);
     });
+  }
+
+  toggleDark(isDark){
+    document.querySelector('body').className = isDark ? 'dark' : ''
   }
 }

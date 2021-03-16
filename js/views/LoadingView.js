@@ -18,7 +18,6 @@ export default class LoadingView extends View{
     }
 
     loading(isLoading = true){
-        console.log("loading",isLoading);
         isLoading ? this.show() : this.hide()
     }
 }
