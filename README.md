@@ -71,3 +71,6 @@ getCookie(name){
     return cookie
 }
 ```
+
+### 1.3v
+1. 이미지 로딩시 로딩바 표시 기능 추가
