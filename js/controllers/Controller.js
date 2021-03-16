@@ -2,6 +2,7 @@ import FormView from "../views/FormView.js";
 import ResultView from "../views/ResultView.js";
 import HistoryView from "../views/HistoryView.js";
 import ModalView from "../views/ModalView.js";
+import LoadingView from "../views/LoadingView.js";
 
 import SearchModel from "../models/SearchModel.js";
 import HistoryModel from "../models/HistoryModel.js";
@@ -16,6 +17,8 @@ export default class Controller {
       .on("@submit", (e) => this.onSubmit(e.detail.input))
       .on("@reset", (e) => this.onReset());
 
+    this.loadingView = new LoadingView(document.querySelector('#load-wrap'))
+    
     this.resultView = new ResultView(
       document.querySelector("#search-result")
     ).on("@onClickImg", (e) => this.onClickImg(e.detail.id));
@@ -44,6 +47,7 @@ export default class Controller {
   }
 
   getMoreData(){
+    this.loadingView.loading(true)
     SearchModel.fetchMoreData().then(({data}) => {
       this.fetchMoreData(data.results)
     })
@@ -51,6 +55,7 @@ export default class Controller {
 
   fetchMoreData(data){
     this.resultView.moreRender(data)
+    this.loadingView.loading(false)
   }
 
   fetchSearchHistory() {
@@ -66,6 +71,7 @@ export default class Controller {
 
   search(input) {
     this.formView.setValue(input);
+    this.loadingView.loading(true)
     SearchModel.list(input).then(({ data }) => {
       this.onSearchResult(data.results);
     });
@@ -75,6 +81,7 @@ export default class Controller {
   onSearchResult(data = []) {
     this.historyView.hide();
     this.resultView.render(data);
+    this.loadingView.loading(false)
   }
 
   onReset() {
