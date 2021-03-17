@@ -17,10 +17,38 @@
         <main>
             <div class="container">
                 <form type='submit' class='search-form'>
-                    <input class='search-input' type="text" placeholder="검색어를 입력하시오" autofocus>
-                    <button type='reset' class='btn-reset'><i class="fas fa-times-circle"></i></button>
+                    <div class="search">
+                        <input class='search-input' type="text" placeholder="검색어를 입력하시오" autofocus>
+                        <button type='reset' class='btn-reset'><i class="fas fa-times-circle"></i></button>
+                    </div>
+                    <div class="filter-wrap">
+                        <select name="color" id='color'>
+                            <option value='option'>select color</option>
+                            <option value='black_and_white'>black_and_white</option>
+                            <option value='yellow'>yellow</option>
+                            <option value='orange'>orange</option>
+                            <option value='red'>red</option>
+                            <option value='purple'>purple</option>
+                            <option value='magenta'>magenta</option>
+                            <option value='green'>green</option>
+                            <option value='teal'>teal</option>
+                            <option value='blue'>blue</option>
+                        </select>
+                        <select name="orientation" id="orientation">
+                            <option value='option'>select orientation</option>
+                            <option value='landscape'>landscape</option>
+                            <option value='portrait'>portrait</option>
+                            <option value='squarish'>squarish</option>
+                        </select>
+                        <select name="order_by" id="order_by">
+                            <option value='option'>select order_by</option>
+                            <option value="relevant">relevant</option>
+                            <option value="latest">latest</option>
+                        </select>
+                    </div>
                 </form>
-                <div id='search-history'  class='search-history'></div>
+                <div id='search-history' class='search-history'></div>
+                
                 <section class='content'>
                     <div id="darkmode-wrap" class='darkmode-wrap'></div>
                     <div id="search-result"></div>

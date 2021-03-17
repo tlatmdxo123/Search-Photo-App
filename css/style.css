@@ -1,7 +1,5 @@
 .body{
   position: relative;
-  background: white;
-  transition: background .3s ease;
 }
 .container {
   width: 80%;
@@ -20,13 +18,17 @@
   
   box-sizing: border-box;
   width: 100%;
-  display: flex;
-  justify-content: space-between;
   padding: 10px;
-  border: 1px solid black;
   border-radius: 5px;
   margin-top: 20px;
+}
+.search{
+  display:flex;
+  justify-content: space-between;
   background: white;
+  border:1px solid black;
+  padding: 10px;
+  border-radius: 5px;
 }
 
 .search-input {
@@ -43,6 +45,29 @@
   font-size: 15px;
   color: #004ff6;
 }
+
+/* filter */
+.filter-wrap{
+  margin-top: 10px;
+  display: flex;
+  justify-content:flex-end;
+}
+.filter-wrap .filter_label{
+  margin-right: 30px;
+}
+.filter-wrap select{
+  display:block;
+  margin-right: 20px;
+  background: none;
+  color: white;
+  border:none;
+  
+}
+.filter-wrap select:last-child{
+  margin-right: 0;
+}
+
+
 
 .content {
   margin-top: 20px;

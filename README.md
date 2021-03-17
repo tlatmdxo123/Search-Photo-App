@@ -77,3 +77,53 @@ getCookie(name){
 
 ### 1.4v
 1. 다크모드 기능 추가
+
+### 1.5v
+1.사진 조건 필터링 기능 추가
+
+#### 문제 및 해결과정
+필터링 기능을 추가했을 때 무한스크롤을 구현하기 위해선 필터 조건도 쿠키에 추가해야 했습니다.
+객체는 저장하지 못하는 쿠키의 특성으로 JSON으로 문자열화 했습니다. 그리고 쿠키관련 메소드를 
+유틸파일로 따로 분리하여 관리하여 api모듈을 정리하였습니다.
+
+```javascript
+//api.js
+setPage(query,filter){
+    this.page = 0
+    const strFilter = JSON.stringify(filter)
+    setCookie("query",query,{'max-age':3600})
+    setCookie("filter",strFilter,{'max-age':3600})
+}
+
+//util/cookie.js
+function setCookie(name,value,options={}){
+    if(options.expires instanceof Date){
+        options.expires = options.expires.toUTCString()
+    }
+    let updatedCookie = encodeURIComponent(name)+"="+encodeURIComponent(value)
+
+    for(let optionKey in options){
+        updatedCookie += ";"+optionKey;
+        let optionValue = options[optionKey]
+        if(optionValue !== true){
+            updatedCookie += "=" + optionValue
+        }
+    }
+
+    document.cookie = updatedCookie;
+}
+
+function getCookie(name){
+    let matches = document.cookie.match(new RegExp(
+        "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+    ));
+    return matches ? decodeURIComponent(matches[1]) : undefined;
+}
+
+export {setCookie,getCookie}
+
+
+
+
+```
+

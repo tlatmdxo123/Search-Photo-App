@@ -7,6 +7,9 @@ export default class FormView extends View {
     super(el);
     this.inputEl = this.el.querySelector("[type=text]");
     this.resetEl = this.el.querySelector("[type=reset]");
+    this.filter = this.el.querySelectorAll('select')
+
+    this.filterList = {}
 
     this.showResetBtn(false);
     this.bindEvents();
@@ -31,7 +34,10 @@ export default class FormView extends View {
 
   onSubmit(e) {
     e.preventDefault();
-    this.emit("@submit", { input: this.inputEl.value });
+    Array.from(this.filter).forEach(item => {
+      this.filterList[item.name] = item.value !== 'option' ? item.value : null
+    })
+    this.emit("@submit", { input: this.inputEl.value, filter:this.filterList });
   }
 
   onReset() {

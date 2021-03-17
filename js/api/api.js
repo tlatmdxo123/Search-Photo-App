@@ -1,3 +1,5 @@
+import {setCookie,getCookie} from '../util/cookie.js'
+
 //client_id=YOUR_ACCESS_KEY
 export default class Api {
   constructor() {
@@ -6,12 +8,13 @@ export default class Api {
       baseURL: "https://api.unsplash.com/",
     });
     this.page = 0
+
   }
 
-  fetchSearchData(query) {
-    this.setPage(query)
+  fetchSearchData(query,filter) {
+    this.setPage(query,filter)
     return this.axios.get("search/photos", {
-      params: { client_id: this.ACCESS_KEY, query },
+      params: { client_id: this.ACCESS_KEY, query,...filter },
     });
   }
 
@@ -21,30 +24,33 @@ export default class Api {
     });
   }
 
-  setPage(query){
+  setPage(query,filter){
     this.page = 0
-    document.cookie = `query = ${query}`
+    const strFilter = JSON.stringify(filter)
+    setCookie("query",query,{'max-age':3600})
+    setCookie("filter",strFilter,{'max-age':3600})
 
   }
 
-  getCookie(name){
-    const cookieList = document.cookie.split(';')
-    const cookie = cookieList
-      .map(cookie => cookie.split('='))
-      .find(item => item[0] === name)[1]
-    return cookie
-  }
 
   getMoreData(){
-    const query = this.getCookie("query")
-    this.page+=1
-    return this.axios.get("search/photos", {
-      params: { 
-        client_id: this.ACCESS_KEY,
-        query,
-        page:this.page
-      },
-    });
+    if(getCookie("query")){
+      const query = getCookie("query")
+      const filter = JSON.parse(getCookie("filter"))
+      this.page+=1
+      console.log('getMoreData',this.page);
+      return this.axios.get("search/photos", {
+        params: { 
+          client_id: this.ACCESS_KEY,
+          query,
+          page:this.page,
+          ...filter
+        },
+      });
+    }else{
+      return
+    }
+    
     
   }
 }

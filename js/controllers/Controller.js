@@ -15,7 +15,7 @@ export default class Controller {
   constructor() {
     this.formView = new FormView(document.querySelector(".search-form"));
     this.formView
-      .on("@submit", (e) => this.onSubmit(e.detail.input))
+      .on("@submit", (e) => this.onSubmit(e.detail.input,e.detail.filter))
       .on("@reset", (e) => this.onReset());
 
     this.loadingView = new LoadingView(document.querySelector('#load-wrap'))
@@ -52,9 +52,15 @@ export default class Controller {
   }
 
   getMoreData(){
-    this.loadingView.loading(true)
+    
     SearchModel.fetchMoreData().then(({data}) => {
-      this.fetchMoreData(data.results)
+      if(data){
+        this.fetchMoreData(data.results)
+        this.loadingView.loading(true)
+      }else{
+        return
+      }
+      
     })
   }
 
@@ -69,15 +75,14 @@ export default class Controller {
     });
   }
 
-  onSubmit(input) {
-    console.log(tag, "onSubmit", input);
-    this.search(input);
+  onSubmit(input,filter) {
+    this.search(input,filter);
   }
 
-  search(input) {
+  search(input,filter) {
     this.formView.setValue(input);
     this.loadingView.loading(true)
-    SearchModel.list(input).then(({ data }) => {
+    SearchModel.list(input,filter).then(({ data }) => {
       this.onSearchResult(data.results);
     });
     HistoryModel.add(input);
