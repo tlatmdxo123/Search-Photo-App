@@ -10,12 +10,34 @@
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
 </head>
 <body>
-    <div>
-        <header>
-            <h2 class="title">검색</h2>
+    <div class='wrap'>
+        <header class='header'>
+            <div class="info-btn"><a href="#"><i class="fas fa-user"></i></a></div>
+            <h1 class="title">SEARCH!</h2>
+            <div id="darkmode-wrap" class='darkmode-wrap'></div>
         </header>
         <main>
-            <div class="container">
+            <div id="user-info" class='user-info'>
+                
+            </div>
+            <div id='login-container' class='login-container'>
+                <h1 class='login-title'>로그인하기</h1>
+                <form class='login'>
+                    <div class="input-list">
+                        <label for="email">email:</label>
+                        <input id='email' type="text" name="email" placeholder='이메일을 입력하세요'>
+                    </div>
+                    <div class="input-list">
+                        <label for="password">password:</label>
+                        <input id='password' type="password" name="password" placeholder='비밀번호를 입력하세요'>
+                    </div>
+                    <button class='login-btn'>로그인하기</button>
+                    <a class='change-link' href="#">회원가입</a>
+                    <p class='check-msssage'></p>
+            
+                </form>
+            </div>
+            <div id='main' style='display: none' class="container">
                 <form type='submit' class='search-form'>
                     <div class="search">
                         <input class='search-input' type="text" placeholder="검색어를 입력하시오" autofocus>
@@ -50,7 +72,6 @@
                 <div id='search-history' class='search-history'></div>
                 
                 <section class='content'>
-                    <div id="darkmode-wrap" class='darkmode-wrap'></div>
                     <div id="search-result"></div>
                     <div id='load-wrap' class='load-wrap'></div>
                     <div id='rendering-trigger'></div>
@@ -60,8 +81,10 @@
         </main>
         
     </div>
-    
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.2.10/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.2.10/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.2.10/firebase-firestore.js"></script>
     <script type="module" src="./js/main.js"></script>
 </body>
 </html>

@@ -4,10 +4,14 @@ import HistoryView from "../views/HistoryView.js";
 import ModalView from "../views/ModalView.js";
 import LoadingView from "../views/LoadingView.js";
 import DarkModeView from "../views/DarkModeView.js";
+import LoginView from "../views/LoginView.js";
+import HeaderView from "../views/HeaderView.js";
 
 import SearchModel from "../models/SearchModel.js";
 import HistoryModel from "../models/HistoryModel.js";
 import ModalModel from "../models/ModalModel.js";
+
+import { getCookie } from "../util/cookie.js";
 
 const tag = "[Controller]";
 
@@ -15,11 +19,11 @@ export default class Controller {
   constructor() {
     this.formView = new FormView(document.querySelector(".search-form"));
     this.formView
-      .on("@submit", (e) => this.onSubmit(e.detail.input,e.detail.filter))
+      .on("@submit", (e) => this.onSubmit(e.detail.input, e.detail.filter))
       .on("@reset", (e) => this.onReset());
 
-    this.loadingView = new LoadingView(document.querySelector('#load-wrap'))
-    
+    this.loadingView = new LoadingView(document.querySelector("#load-wrap"));
+
     this.resultView = new ResultView(
       document.querySelector("#search-result")
     ).on("@onClickImg", (e) => this.onClickImg(e.detail.id));
@@ -33,40 +37,60 @@ export default class Controller {
 
     this.modalView = new ModalView(document.querySelector("#modal-wrap"));
 
-    this.darkModeView = new DarkModeView(document.querySelector('#darkmode-wrap'))
-      .on('@toggle',e => this.toggleDark(e.detail.isDark))
-    const {matches} = window.matchMedia('(prefers-color-scheme:dark)')
-    this.darkModeView.toggleDark(matches)
+    this.darkModeView = new DarkModeView(
+      document.querySelector("#darkmode-wrap")
+    ).on("@toggle", (e) => this.toggleDark(e.detail.isDark));
+
+    this.loginView = new LoginView(document.querySelector("#login-container"))
+      .on("@login", (e) => this.loginUser(e.detail.userData))
+      .on("@signup", (e) => this.signupUser(e.detail.userData));
+
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        this.login();
+      } else {
+        this.loginView.showLoginPage();
+      }
+    });
+
+    this.headerView = new HeaderView(
+      document.querySelector("header")
+    ).on("@onClickUser", () => this.onClickUser());
+
+    const { matches } = window.matchMedia("(prefers-color-scheme:dark)");
+    this.darkModeView.toggleDark(matches);
     this.renderView();
-    this.infiniteScroll()
+    this.infiniteScroll();
+
+    this.userInfo = {};
   }
 
   renderView() {
     this.fetchSearchHistory();
   }
 
-  infiniteScroll(){
-    const renderingTrigger = document.querySelector('#rendering-trigger')
-    const observer = new IntersectionObserver(this.getMoreData.bind(this))
-    observer.observe(renderingTrigger)
+  infiniteScroll() {
+    const renderingTrigger = document.querySelector("#rendering-trigger");
+    const observer = new IntersectionObserver(this.getMoreData.bind(this));
+    observer.observe(renderingTrigger);
   }
 
-  getMoreData(){
-    
-    SearchModel.fetchMoreData().then(({data}) => {
-      if(data){
-        this.fetchMoreData(data.results)
-        this.loadingView.loading(true)
-      }else{
-        return
-      }
-      
-    })
+  getMoreData() {
+    if (getCookie("query")) {
+      SearchModel.fetchMoreData().then(({ data }) => {
+        if (data) {
+          this.fetchMoreData(data.results);
+          this.loadingView.loading(true);
+        } else {
+          return;
+        }
+      });
+    }
   }
 
-  fetchMoreData(data){
-    this.resultView.moreRender(data)
-    this.loadingView.loading(false)
+  fetchMoreData(data) {
+    this.resultView.moreRender(data);
+    this.loadingView.loading(false);
   }
 
   fetchSearchHistory() {
@@ -75,14 +99,14 @@ export default class Controller {
     });
   }
 
-  onSubmit(input,filter) {
-    this.search(input,filter);
+  onSubmit(input, filter) {
+    this.search(input, filter);
   }
 
-  search(input,filter) {
+  search(input, filter) {
     this.formView.setValue(input);
-    this.loadingView.loading(true)
-    SearchModel.list(input,filter).then(({ data }) => {
+    this.loadingView.loading(true);
+    SearchModel.list(input, filter).then(({ data }) => {
       this.onSearchResult(data.results);
     });
     HistoryModel.add(input);
@@ -91,7 +115,7 @@ export default class Controller {
   onSearchResult(data = []) {
     this.historyView.hide();
     this.resultView.render(data);
-    this.loadingView.loading(false)
+    this.loadingView.loading(false);
   }
 
   onReset() {
@@ -115,7 +139,32 @@ export default class Controller {
     });
   }
 
-  toggleDark(isDark){
-    document.querySelector('body').className = isDark ? 'dark' : ''
+  toggleDark(isDark) {
+    document.querySelector("body").className = isDark ? "dark" : "";
+  }
+
+  async loginUser({ email, password }) {
+    try {
+      await firebase.auth().signInWithEmailAndPassword(email, password);
+      this.login();
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async signupUser({ email, password }) {
+    try {
+      await firebase.auth().createUserWithEmailAndPassword(email, password);
+      this.loginView.confirmSignup();
+    } catch (error) {}
+  }
+
+  login() {
+    this.loginView.confirmLogin();
+    document.querySelector("#main").style.display = "block";
+  }
+
+  onClickUser() {
+    debugger;
   }
 }
